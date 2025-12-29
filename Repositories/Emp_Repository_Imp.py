@@ -1,130 +1,144 @@
-from Repositories.Emp_Repository import Emp_Repository  
+from Repositories.Emp_Repository import EmpRepository  
 
-class Emp_Repository_Imp(Emp_Repository):
+class EmpRepositoryImp(EmpRepository):
     def __init__(self, connection):
         self.connection = connection
-    def insert_employee(self, Employee):
-        # Implementation for inserting an employee
+    def insert_employee(self, employee):
         cursor = self.connection.cursor()
-        insert_query = "INSERT INTO Employee (EmpID, Ename, Password, Gender, DOB, Phone, Email, Salary, Address, DeptNo) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        insert_query = """INSERT INTO Employee 
+                        (EmpId, Ename, Password, Gender, Dob, Phone, Email, Salary, Address, DeptNo) 
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
         try:
-            cursor.execute(insert_query, (Employee.empID, Employee.ename, Employee.password, Employee.gender, Employee.dob, Employee.phone, Employee.email, Employee.salary, Employee.address, Employee.deptNo))
+            cursor.execute(insert_query, (employee.empId, employee.ename, employee.password, 
+                                          employee.gender, employee.dob, employee.phone, 
+                                          employee.email, employee.salary, employee.address, 
+                                          employee.deptNo))
             self.connection.commit() # Commit the transaction to save changes        
             print("Employee record inserted successfully.")
         except Exception as e:
             print(f"Error inserting record: {e}")
         finally:
             cursor.close()
-            self.connection.close()
-        print("----------------------------------------------------------------------------------------------------------\n")
-    def update_employee(self, Employee):
-        # Implementation for updating an employee
-        cursor = self.connection.cursor()
 
+    def update_employee(self, employee):
+        cursor = self.connection.cursor()
         update_fields = []
         params = []
-
-        if Employee.ename:
+        if employee.ename:
             update_fields.append("Ename = %s")
-            params.append(Employee.ename)
-
-        if Employee.password:
-            update_fields.append("Password = %s")   
-            params.append(Employee.password)
-
-        if Employee.gender:
+            params.append(employee.ename)
+        if employee.password:
+            update_fields.append("Password = %s")
+            params.append(employee.password)
+        if employee.gender:
             update_fields.append("Gender = %s")
-            params.append(Employee.gender)
-        if Employee.dob:
-            update_fields.append("DOB = %s")
-            params.append(Employee.dob) 
-        if Employee.phone:
+            params.append(employee.gender)
+        if employee.dob:
+            update_fields.append("Dob = %s")
+            params.append(employee.dob)
+        if employee.phone:
             update_fields.append("Phone = %s")
-            params.append(Employee.phone)
-        if Employee.email:
+            params.append(employee.phone)
+        if employee.email:
             update_fields.append("Email = %s")
-            params.append(Employee.email)
-        if Employee.salary:
+            params.append(employee.email)
+        if employee.salary is not None:
             update_fields.append("Salary = %s")
-            params.append(Employee.salary)
-        if Employee.address:
+            params.append(employee.salary)
+        if employee.address:
             update_fields.append("Address = %s")
-            params.append(Employee.address)
-        if Employee.deptNo:
+            params.append(employee.address)
+        if employee.deptNo is not None:
             update_fields.append("DeptNo = %s")
-            params.append(Employee.deptNo)
-        if not update_fields:
-            print("Nothing to update.")
-            return
-        params.append(Employee.empID)
-        update_query = f"UPDATE Employee SET {', '.join(update_fields)} WHERE EmpID = %s"
+            params.append(employee.deptNo)
+
+        # Add EmpId to the WHERE clause
+        params.append(employee.empId)  # For the WHERE clause
+        update_query = f"UPDATE Employee SET {', '.join(update_fields)} WHERE EmpId = %s"
         try:
             cursor.execute(update_query, tuple(params))
-            self.connection.commit()
+            self.connection.commit() # Commit the transaction to save changes        
             print("Employee record updated successfully.")
         except Exception as e:
-            print(f"Error updating employee record: {e}")
+            print(f"Error updating record: {e}")
         finally:
             cursor.close()
-            self.connection.close()
-        print("----------------------------------------------------------------------------------------------------------\n")
-    def delete_employee(self, EmpID):
-        # Implementation for deleting an employee
+
+    
+
+    def delete_employee(self, empId):
         cursor = self.connection.cursor()
-        delete_query = "DELETE FROM Employee WHERE EmpID = %s"
+        delete_query = "DELETE FROM emp WHERE EmpId = %s"
         try:
-            cursor.execute(delete_query, (EmpID,))
-            self.connection.commit() # Commit the transaction to save changes        
+            cursor.execute(delete_query, (empId,))
+            self.connection.commit() # Commit the transaction to save changes
             print("Employee record deleted successfully.")
         except Exception as e:
-            print(f"Error deleting record: {e}")
+            print(f"Error deleting employee record: {e}")
         finally:
             cursor.close()
-            self.connection.close()
-        print("----------------------------------------------------------------------------------------------------------\n")
     def get_all_employees(self):
-        # Implementation for retrieving all employees
         cursor = self.connection.cursor()
         select_query = "SELECT * FROM Employee"
         try:
             cursor.execute(select_query)
-            employees = cursor.fetchall()
-            return employees
+            empList = cursor.fetchall()
+            return empList
         except Exception as e:
-            print(f"Error retrieving records: {e}")
+            print(f"Error fetching records: {e}")
             return []
         finally:
             cursor.close()
-            self.connection.close()
-        print("----------------------------------------------------------------------------------------------------------\n")
-    def get_employee_by_EmpId(self, EmpID):
-        # Implementation for retrieving an employee by EmpID
+
+    def get_employee_by_EmpId(self, empId):
         cursor = self.connection.cursor()
-        select_query = "SELECT * FROM Employee WHERE EmpID = %s"
+        select_query = "SELECT * FROM Employee WHERE EmpId = %s"
         try:
-            cursor.execute(select_query, (EmpID,))
-            employees = cursor.fetchall()
-            return employees
+            cursor.execute(select_query, (empId,))
+            empList = cursor.fetchall()
+            return empList
         except Exception as e:
-            print(f"Error retrieving records: {e}")
+            print(f"Error fetching records: {e}")
             return []
         finally:
-            cursor.close()
-            self.connection.close()
-    print("----------------------------------------------------------------------------------------------------------\n")   
-    def get_employee_by_Ename(self, Ename):
-        # Implementation for retrieving an employee by Ename
+            cursor.close()  
+
+    def get_employee_by_deptNo(self, deptNo):
         cursor = self.connection.cursor()
-        select_query = "SELECT * FROM Employee WHERE Ename = %s"
+        select_query = "SELECT * FROM Employee WHERE DeptNo = %s"
         try:
-            cursor.execute(select_query, (Ename,))
-            employees = cursor.fetchall()
-            return employees
+            cursor.execute(select_query, (deptNo,))
+            empList = cursor.fetchall()
+            return empList
         except Exception as e:
-            print(f"Error retrieving records: {e}")
+            print(f"Error fetching records: {e}")
             return []
         finally:
             cursor.close()
-            self.connection.close()
-    print("----------------------------------------------------------------------------------------------------------\n")
-    
+
+    def get_employee_by_gender(self, gender):
+        cursor = self.connection.cursor()
+        select_query = "SELECT * FROM Employee WHERE Gender = %s"
+        try:
+            cursor.execute(select_query, (gender,))
+            empList = cursor.fetchall()
+            return empList
+        except Exception as e:
+            print(f"Error fetching records: {e}")
+            return []
+        finally:
+            cursor.close()
+
+    def get_employee_order_by_salary(self, ascending=True):
+        cursor = self.connection.cursor()
+        order = "ASC" if ascending else "DESC"
+        select_query = f"SELECT * FROM Employee ORDER BY Salary {order}"
+        try:
+            cursor.execute(select_query)
+            empList = cursor.fetchall()
+            return empList
+        except Exception as e:
+            print(f"Error fetching records: {e}")
+            return []
+        finally:
+            cursor.close()

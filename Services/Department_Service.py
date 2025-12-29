@@ -41,5 +41,5 @@ class DeptService:
     def Get_department_by_deptNo(self, deptNo):
         return self.dept_repository.get_department_by_deptNo(deptNo)
     
-    def Get_departments_by_dname(self, dname):
-        return self.dept_repository.get_departments_by_dname(dname)
+    def Get_departments_by_dname(self, Dname):
+        return self.dept_repository.get_departments_by_dname(Dname)

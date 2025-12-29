@@ -1,12 +1,15 @@
-from db.MySQLConnection import MySqlConnection
-from Repositories.Dept_Repository_Imp import Dept_Repository_Imp
-from Services.Department_Service import Department
+from db.MySQLConnection import MySQLConnection
+from Repositories.Dept_Repository_Imp import DeptRepositoryImp
+from Repositories.Emp_Repository_Imp import EmpRepositoryImp
+from Services.Department_Service import DeptService
+from Services.Employee_Service import EmpService
 from Models.Department import Department
+from Models.Employee import Employee
 
 def Department_CRUD_Operations():
-    connection = MySqlConnection().get_connection()
-    deptRepository = Dept_Repository_Imp(connection)
-    deptService = Department_Service(deptRepository)
+    connection = MySQLConnection().get_connection()
+    deptRepository = DeptRepositoryImp(connection)
+    deptService = DeptService(deptRepository)
 
     print("\nDepartment CRUD Operations : ")
     print("1. Insert Department Record")
@@ -21,11 +24,11 @@ def Department_CRUD_Operations():
         dept_location = input("Enter Location: ")
         dept = Department(dept_no, dept_name, dept_location)
         #Validate DeptNo and Dname before insertion
-        deptValid = deptService.Get_department_by_deptNo(dept.deptNo)      
+        deptValid = deptService.Get_department_by_deptNo(dept.DeptNo)      
         if deptValid:
             print("Already Department with this DeptNo exists. Cannot insert duplicate DeptNo.")
         else:
-            deptValid = deptService.Get_departments_by_dname(dept.dname)
+            deptValid = deptService.Get_departments_by_dname(dept.Dname)
             if deptValid:
                 print("Already Department with this Dname exists. Cannot insert duplicate Dname.")
             else:
@@ -51,10 +54,89 @@ def Department_CRUD_Operations():
         else:
             print("Department not found.")
 
+
     connection.close()
 
 def Employee_CRUD_Operations():
-    pass
+    connection = MySQLConnection().get_connection()
+    empRepository = EmpRepositoryImp(connection)
+    empService = EmpService(empRepository)
+
+    print("\nEmployee CRUD Operations : ")
+    print("1. Insert Employee Record")
+    print("2. Update Employee Record")
+    print("3. Delete Employee Record")
+    print("4. Fetch All Employee Records")
+    print("5. Fetch Employee Record by EmpId")
+    print("6. Fetch Employee Record by DeptNo")
+    print("7. Fetch Employee Record by Gender")
+    print("8. Fetch Employee Record by Salary in order (Ascending/Descending)")
+    choice = int(input("Enter your choice (1-8): "))
+    if choice == 1:        
+        EmpId = int(input("Enter EmpId: "))
+        Ename = input("Enter Ename: ")
+        Password = input("Enter Password: ")
+        Gender = input("Enter Gender: ")
+        Dob = input("Enter Dob (YYYY-MM-DD): ")
+        Phone = input("Enter Phone: ")
+        Email = input("Enter Email: ")
+        Salary = float(input("Enter Salary: "))
+        Address = input("Enter Address: ")
+        DeptNo = int(input("Enter DeptNo: "))   
+        # Validate EmpId before insertion
+        empValidate = empService.get_employee_by_EmpId(EmpId)
+        if empValidate:
+            print("Already Employee with this EmpId exists. Cannot insert duplicate EmpId.")
+        else: 
+            emp = Employee(EmpId, Ename, Password, Gender, Dob, Phone, Email, Salary, Address, DeptNo)
+            empService.insert_employee(emp)
+    elif choice == 2:
+        EmpId = int(input("Enter EmpId to update: "))
+        Ename = input("Enter new Ename (leave blank to skip): ")
+        Password = input("Enter new Password (leave blank to skip): ")
+        Gender = input("Enter new Gender (leave blank to skip): ")
+        Dob = input("Enter new Dob (YYYY-MM-DD) (leave blank to skip): ")
+        Phone = input("Enter new Phone (leave blank to skip): ")
+        Email = input("Enter new Email (leave blank to skip): ")
+        Salary_input = input("Enter new Salary (leave blank to skip): ")
+        Salary = float(Salary_input) if Salary_input else None
+        Address = input("Enter new Address (leave blank to skip): ")
+        DeptNo_input = input("Enter new DeptNo (leave blank to skip): ")
+        DeptNo = int(DeptNo_input) if DeptNo_input else None
+        emp = Employee(EmpId, Ename if Ename else None, Password if Password else None, Gender if Gender else None, Dob if Dob else None, Phone if Phone else None, Email if Email else None, Salary if Salary else None, Address if Address else None, DeptNo if DeptNo else None)
+        empService.update_employee(emp)
+    elif choice == 3:
+        EmpId = int(input("Enter EmpId to delete: "))
+        empService.delete_employee(EmpId)
+    elif choice == 4:
+        empList = empService.get_all_employees()
+        for emp in empList:
+            print(emp)
+    elif choice == 5:
+        EmpId = int(input("Enter EmpId to fetch: "))
+        emp = empService.get_employee_by_empId(EmpId)
+        if emp:
+            print(emp)
+        else:
+            print("Employee not found.")
+
+    elif choice == 6:
+        DeptNo = int(input("Enter DeptNo to fetch employees: "))
+        empList = empService.get_employee_by_deptNo(DeptNo)
+        for emp in empList:
+            print(emp)  
+    elif choice == 7:
+        Gender = input("Enter Gender to fetch employees: ")
+        empList = empService.get_employee_by_gender(Gender)
+        for emp in empList:
+            print(emp)  
+
+    elif choice == 8:
+        empList = empService.get_employee_ordered_by_salary()
+        for emp in empList:
+            print(emp)
+    connection.close()
+
 
 print("\n\nStart CRUD Operations Using OOPs : ")
 ch = input("Which Table CRUD Operations do you want perform (Department - 'D' / Employee - 'E'): ")
